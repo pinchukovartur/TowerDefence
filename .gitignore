@@ -1,0 +1,12 @@
+﻿.vs
+*.meta
+Assets/TextMesh Pro
+Library
+Logs
+obj
+.vsconfig
+Assembly-CSharp.csproj
+MathLern.sln
+Temp
+KidsMathQuiz.sln
+TowerDefence.sln
