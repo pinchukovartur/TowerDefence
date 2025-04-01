@@ -34,6 +34,31 @@ public class PlayerTowersManager : MonoBehaviour
                 }
             };
         }
+
+        StartCoroutine(EnemyShot());
+    }
+
+
+    public IEnumerator EnemyShot()
+    {
+        while (true) {
+
+            int waitTime = Random.Range(2, 5);
+
+            yield return new WaitForSeconds(waitTime);
+
+
+
+            int randomPlayerTower = Random.Range(0, _playerTowers.Count);
+            int randomEnemy = Random.Range(0, _enemyTowers.Count);
+
+            if (_playerTowers[randomPlayerTower].IsDestroed()) {
+                yield return null;
+            }
+            
+            _enemyTowers[randomEnemy].Shot(_playerTowers[randomPlayerTower]);
+
+        }
     }
 
 }

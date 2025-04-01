@@ -13,6 +13,9 @@ public class Tower : MonoBehaviour
     private float _powerReciveSpeed = 2.0f;
 
     [SerializeField]
+    private Vector2 _colisionSize = new Vector2(1.0f, 1.0f);
+
+    [SerializeField]
     private Text _powerLabel;
 
     [SerializeField]
@@ -31,10 +34,16 @@ public class Tower : MonoBehaviour
 
     private float _currentRecivePowerValue = 0.0f;
     private bool _isSelectedTower = false;
+
+    [SerializeField]
     private bool _isShoting = false;
 
     public void SetSelectValue(bool value) {
         _isSelectedTower = value;
+    }
+
+    public bool IsDestroed() {
+        return _power < 0;
     }
 
     void Start()
@@ -42,13 +51,17 @@ public class Tower : MonoBehaviour
         UpdatePowerLabel();
         UpdateSelectColor();
         if (_selectTowerButton) {
-            _selectTowerButton.onClick.AddListener(onSelectTower);
+            _selectTowerButton.onClick.AddListener(OnClick);
         }
     }
 
     void Update()
     {
         if (_isShoting) {
+            return;
+        }
+        if (_power < 0)
+        {
             return;
         }
         _currentRecivePowerValue += Time.deltaTime;
@@ -81,7 +94,7 @@ public class Tower : MonoBehaviour
     public IEnumerator SpawnBullet(Tower enemy) {
 
         _isShoting = true;
-        while (_power > 0) {
+        while (_power > 0 && !enemy.IsDestroed()) {
             var bullet = Instantiate(_bulletPrefab, gameObject.transform);
             bullet.Init(enemy);
             _power--;
@@ -94,5 +107,25 @@ public class Tower : MonoBehaviour
 
     public void Damage() {
         _power--;
+        UpdatePowerLabel();
+        if (_power < 0) {
+            gameObject.SetActive(false);
+        }
+    }
+
+    private void OnClick()
+    {
+        onSelectTower?.Invoke();
+    }
+
+    public Vector2 GetSize() {
+        return _colisionSize;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        // Draw a semitransparent red cube at the transforms position
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        Gizmos.DrawCube(transform.position, new Vector3(_colisionSize.x, _colisionSize.y, 1));
     }
 }
